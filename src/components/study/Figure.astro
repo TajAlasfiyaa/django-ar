@@ -1,0 +1,36 @@
+---
+// A diagram or image with a caption. Click (or Enter) to view it full screen.
+// Works with an imported SVG component, an <img>, or anything else in the slot.
+import { bidiHtml } from '../../plugins/rehype-bidi-isolate.mjs';
+
+interface Props {
+	caption?: string;
+}
+
+const { caption } = Astro.props;
+---
+
+<figure class="figure">
+	<button type="button" class="figure-media" aria-label="عرض الشكل بحجم أكبر"><slot /></button>
+	{caption && <figcaption set:html={bidiHtml(caption)} />}
+	<dialog class="figure-dialog">
+		<form method="dialog"><button class="figure-close">إغلاق</button></form>
+		<div class="figure-dialog-media"></div>
+	</dialog>
+</figure>
+
+<script>
+	for (const figure of document.querySelectorAll<HTMLElement>('.figure')) {
+		const media = figure.querySelector<HTMLButtonElement>('.figure-media')!;
+		const dialog = figure.querySelector<HTMLDialogElement>('.figure-dialog')!;
+		const target = dialog.querySelector('.figure-dialog-media')!;
+		media.addEventListener('click', () => {
+			target.replaceChildren(...[...media.childNodes].map((node) => node.cloneNode(true)));
+			dialog.showModal();
+		});
+		// A click on the backdrop closes it too.
+		dialog.addEventListener('click', (event) => {
+			if (event.target === dialog) dialog.close();
+		});
+	}
+</script>

@@ -1,0 +1,58 @@
+---
+// A self-check question. Write the question, then a Markdown list of choices,
+// then the explanation, which stays hidden until the right choice is picked:
+//
+// <Quiz answer={2}>
+// متى يُنفَّذ الاستعلام؟
+//
+// - عند إنشائه
+// - عند الحاجة لنتيجته
+//
+// الشرح هنا.
+// </Quiz>
+import { Icon } from '@astrojs/starlight/components';
+
+interface Props {
+	/** The correct choice, counting from 1. */
+	answer: number;
+}
+
+const { answer } = Astro.props;
+---
+
+<section class="study-box quiz" data-answer={answer}>
+	<p class="study-box-title"><Icon name="question-circle" size="1.15rem" />اختبر نفسك</p>
+	<div class="quiz-body"><slot /></div>
+	<p class="quiz-feedback" aria-live="polite"></p>
+</section>
+
+<script>
+	for (const quiz of document.querySelectorAll<HTMLElement>('.quiz')) {
+		const list = quiz.querySelector('.quiz-body > ul, .quiz-body > ol');
+		if (!list) continue;
+		const answer = Number(quiz.dataset.answer) - 1;
+		const feedback = quiz.querySelector('.quiz-feedback')!;
+		const choices = [...list.children].map((item, index) => {
+			const button = document.createElement('button');
+			button.type = 'button';
+			button.className = 'quiz-choice';
+			button.append(...item.childNodes);
+			item.append(button);
+			button.addEventListener('click', () => {
+				if (quiz.classList.contains('answered')) return;
+				if (index === answer) {
+					button.classList.add('correct');
+					quiz.classList.add('answered');
+					feedback.textContent = 'إجابة صحيحة!';
+					for (const other of choices) other.disabled = other !== button;
+				} else {
+					button.classList.add('wrong');
+					button.disabled = true;
+					feedback.textContent = 'ليست هذه. فكّر مرة أخرى.';
+				}
+			});
+			return button;
+		});
+		quiz.classList.add('ready');
+	}
+</script>

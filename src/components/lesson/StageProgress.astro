@@ -1,0 +1,32 @@
+---
+import { getLessons } from '../../lib/lessons';
+
+interface Props {
+	stage: number;
+}
+
+const { stage } = Astro.props;
+const lessons = (await getLessons()).filter((l) => l.stage === stage);
+const hours = Math.round(lessons.reduce((sum, l) => sum + l.minutes, 0) / 6) / 10;
+---
+
+<div class="progress-card" data-progress-hrefs={JSON.stringify(lessons.map((l) => l.href))}>
+	{
+		lessons.length > 0 ? (
+			<>
+				<div class="progress-head">
+					<span>تقدّمك في هذه المرحلة</span>
+					<span>
+						<span data-progress-done>0</span> / {lessons.length}
+					</span>
+				</div>
+				<div class="progress-bar">
+					<span data-progress-fill />
+				</div>
+				<p class="progress-foot">الوقت المتوقع للمرحلة: حوالي {hours} ساعة</p>
+			</>
+		) : (
+			<p class="progress-foot">لم تُنشر دروس هذه المرحلة بعد. تابعنا، الدروس في الطريق.</p>
+		)
+	}
+</div>

@@ -1,0 +1,673 @@
+/* Study features: lesson header and footer, progress, exercises, quizzes, terms,
+   figures and diagrams. Colours come from Starlight's variables, so every piece
+   follows light and dark mode. */
+
+/* Reading comfort: Arabic body text a little larger than Starlight's 16px. */
+:root[dir='rtl'] {
+	--sl-text-body: 1.0625rem;
+}
+
+.sl-markdown-content mark {
+	background-color: var(--sl-color-accent-low);
+	color: var(--sl-color-white);
+	padding: 0 0.2em;
+	border-radius: 0.25em;
+}
+
+/* ---------- Lesson header ---------- */
+
+.lesson-meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-top: 1rem;
+}
+
+.chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.375rem;
+	padding: 0.25rem 0.75rem;
+	border: 1px solid var(--sl-color-gray-5);
+	border-radius: 999px;
+	font-size: var(--sl-text-sm);
+	color: var(--sl-color-gray-2);
+}
+
+.chip.done {
+	border-color: var(--sl-color-accent);
+	background-color: var(--sl-color-accent-low);
+	color: var(--sl-color-accent-high);
+}
+
+.chip[hidden] {
+	display: none;
+}
+
+.objectives {
+	margin-top: 1.5rem;
+	padding: 1rem 1.25rem;
+	border: 1px solid var(--sl-color-accent);
+	border-radius: 0.75rem;
+	background-color: var(--sl-color-accent-low);
+}
+
+.objectives-title {
+	font-weight: 600;
+	color: var(--sl-color-white);
+}
+
+.objectives ul {
+	list-style: none;
+	padding: 0;
+	margin: 0.5rem 0 0;
+	display: grid;
+	gap: 0.375rem;
+}
+
+.objectives li {
+	display: flex;
+	gap: 0.5rem;
+	align-items: flex-start;
+	color: var(--sl-color-gray-1);
+}
+
+.objectives li svg {
+	flex-shrink: 0;
+	margin-top: 0.35em;
+	color: var(--sl-color-accent);
+}
+
+.prerequisites {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.375rem;
+	margin-top: 1rem;
+	font-size: var(--sl-text-sm);
+	color: var(--sl-color-gray-3);
+}
+
+/* ---------- Progress ---------- */
+
+.progress-card {
+	margin-top: 1.5rem;
+	padding: 1rem 1.25rem;
+	border: 1px solid var(--sl-color-gray-5);
+	border-radius: 0.75rem;
+}
+
+.progress-head {
+	display: flex;
+	justify-content: space-between;
+	font-size: var(--sl-text-sm);
+	font-weight: 600;
+	color: var(--sl-color-white);
+}
+
+.progress-bar {
+	height: 0.5rem;
+	margin-top: 0.625rem;
+	border-radius: 999px;
+	background-color: var(--sl-color-gray-5);
+	overflow: hidden;
+}
+
+.progress-bar span {
+	display: block;
+	height: 100%;
+	width: 0;
+	border-radius: inherit;
+	background-color: var(--sl-color-accent);
+	transition: width 0.4s ease;
+}
+
+.progress-foot {
+	margin-top: 0.5rem;
+	font-size: var(--sl-text-sm);
+	color: var(--sl-color-gray-3);
+}
+
+.reading-progress {
+	position: fixed;
+	top: var(--sl-nav-height);
+	inset-inline: 0;
+	height: 3px;
+	z-index: var(--sl-z-index-navbar);
+	pointer-events: none;
+}
+
+.reading-progress span {
+	display: block;
+	height: 100%;
+	width: 0;
+	background-color: var(--sl-color-accent);
+}
+
+/* Folding the navigation sidebar (wide screens only; phones use the menu button). */
+.sidebar-toggle {
+	display: none;
+}
+
+@media (min-width: 50em) {
+	.sidebar-toggle {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		position: fixed;
+		top: calc(var(--sl-nav-height) + 0.75rem);
+		inset-inline-start: calc(var(--sl-content-inline-start, 0rem) + 0.75rem);
+		z-index: var(--sl-z-index-navbar);
+		width: 2.25rem;
+		height: 2.25rem;
+		border: 1px solid var(--sl-color-gray-5);
+		border-radius: 0.5rem;
+		background-color: var(--sl-color-bg);
+		color: var(--sl-color-gray-2);
+		cursor: pointer;
+	}
+
+	.sidebar-toggle:hover {
+		border-color: var(--sl-color-accent);
+		color: var(--sl-color-accent-high);
+	}
+
+	html[data-sidebar-collapsed][data-has-sidebar] {
+		--sl-content-inline-start: 0rem;
+	}
+
+	html[data-sidebar-collapsed] .sidebar-pane {
+		display: none;
+	}
+}
+
+.sidebar-content a[data-done]::after {
+	content: '✓';
+	margin-inline-start: 0.5em;
+	font-weight: 700;
+	color: var(--sl-color-accent);
+}
+
+.continue {
+	display: grid;
+	gap: 1rem;
+	margin-bottom: 2rem;
+	padding: 1.25rem;
+	border: 1px solid var(--sl-color-accent);
+	border-radius: 1rem;
+	background-color: var(--sl-color-accent-low);
+}
+
+.continue[hidden] {
+	display: none;
+}
+
+.continue .progress-card {
+	margin: 0;
+	border: 0;
+	padding: 0;
+}
+
+.continue-label {
+	font-size: var(--sl-text-sm);
+	color: var(--sl-color-gray-2);
+}
+
+.continue-main a {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: var(--sl-text-xl);
+	font-weight: 600;
+	color: var(--sl-color-white);
+	text-decoration: none;
+}
+
+.continue-main a:hover {
+	color: var(--sl-color-accent-high);
+}
+
+/* ---------- Lesson footer ---------- */
+
+.lesson-footer {
+	display: grid;
+	gap: 1.25rem;
+	margin-top: 3rem;
+	padding-top: 2rem;
+	border-top: 1px solid var(--sl-color-hairline-light);
+}
+
+.docs-ref {
+	padding: 1rem 1.25rem;
+	border: 1px dashed var(--sl-color-gray-4);
+	border-radius: 0.75rem;
+}
+
+.docs-ref-title {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-weight: 600;
+	color: var(--sl-color-white);
+}
+
+.docs-ref ul {
+	margin: 0.5rem 0 0;
+	padding-inline-start: 1.25rem;
+}
+
+.docs-ref a {
+	color: var(--sl-color-text-accent);
+}
+
+.complete-box {
+	display: grid;
+	justify-items: center;
+	gap: 0.5rem;
+	text-align: center;
+}
+
+.complete-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.75rem 1.5rem;
+	border: 2px solid var(--sl-color-accent);
+	border-radius: 999px;
+	background: transparent;
+	color: var(--sl-color-accent-high);
+	font: inherit;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color 0.2s, color 0.2s;
+}
+
+.complete-btn:hover {
+	background-color: var(--sl-color-accent-low);
+}
+
+.complete-btn[aria-pressed='true'] {
+	background-color: var(--sl-color-accent);
+	color: var(--sl-color-black);
+}
+
+.complete-note {
+	min-height: 1.5em;
+	color: var(--sl-color-accent-high);
+	font-weight: 500;
+}
+
+/* ---------- Study boxes: exercise, quiz, summary ---------- */
+
+.study-box {
+	--study-color: var(--sl-color-accent);
+	padding: 1rem 1.25rem;
+	border: 1px solid var(--sl-color-gray-5);
+	border-inline-start: 4px solid var(--study-color);
+	border-radius: 0.75rem;
+	background-color: var(--sl-color-gray-6);
+}
+
+:root[data-theme='light'] .study-box {
+	background-color: var(--sl-color-gray-7);
+}
+
+.study-box.quiz {
+	--study-color: var(--sl-color-blue);
+}
+
+.study-box.summary {
+	--study-color: var(--sl-color-orange);
+}
+
+.study-box-title {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-weight: 600;
+	color: var(--sl-color-white);
+}
+
+.study-box-title svg {
+	color: var(--study-color);
+}
+
+.study-box.summary ul {
+	list-style: none;
+	padding-inline-start: 0;
+}
+
+.study-box.summary li {
+	position: relative;
+	padding-inline-start: 1.5rem;
+}
+
+.study-box.summary li::before {
+	content: '★';
+	position: absolute;
+	inset-inline-start: 0;
+	color: var(--sl-color-orange);
+}
+
+/* Hint and solution: folded until the student asks for them. The arrow is
+   Starlight's own <summary> marker. */
+.reveal {
+	padding: 0;
+	border: 1px solid var(--sl-color-gray-5);
+	border-radius: 0.5rem;
+	background-color: var(--sl-color-bg);
+}
+
+.sl-markdown-content .reveal > summary {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin: 0;
+	padding: 0.5rem 0.875rem;
+	color: var(--sl-color-gray-1);
+}
+
+/* Starlight points the arrow left in RTL but doesn't turn it when open. */
+[dir='rtl'] .sl-markdown-content .reveal[open] > summary::before {
+	transform: rotateZ(90deg);
+}
+
+.reveal.solution summary svg {
+	color: var(--sl-color-accent);
+}
+
+.reveal.hint summary svg {
+	color: var(--sl-color-blue);
+}
+
+.reveal-note {
+	font-weight: 400;
+	font-size: var(--sl-text-sm);
+	color: var(--sl-color-gray-3);
+}
+
+.reveal-body {
+	padding: 0 0.875rem 0.875rem;
+}
+
+/* Quiz choices become buttons once the script runs. */
+.quiz.ready .quiz-body > :is(ul, ol) {
+	list-style: none;
+	padding: 0;
+	display: grid;
+	gap: 0.5rem;
+}
+
+.quiz.ready .quiz-body > :is(ul, ol) li {
+	margin: 0;
+}
+
+.quiz-choice {
+	width: 100%;
+	padding: 0.625rem 1rem;
+	border: 1px solid var(--sl-color-gray-5);
+	border-radius: 0.5rem;
+	background-color: var(--sl-color-bg);
+	color: var(--sl-color-white);
+	font: inherit;
+	line-height: 1.6;
+	text-align: start;
+	cursor: pointer;
+	transition: border-color 0.2s, background-color 0.2s;
+}
+
+.quiz-choice:hover:not(:disabled) {
+	border-color: var(--sl-color-blue);
+}
+
+.quiz-choice.correct {
+	border-color: var(--sl-color-green);
+	background-color: var(--sl-color-green-low);
+}
+
+.quiz-choice.wrong {
+	border-color: var(--sl-color-red);
+	background-color: var(--sl-color-red-low);
+	opacity: 0.8;
+}
+
+.quiz-choice:disabled {
+	cursor: default;
+}
+
+/* The explanation (anything after the choices) appears once answered. */
+.quiz.ready:not(.answered) .quiz-body > :is(ul, ol) ~ * {
+	display: none;
+}
+
+.quiz-feedback {
+	min-height: 1.5em;
+	font-weight: 600;
+	color: var(--sl-color-gray-2);
+}
+
+/* No reserved space before the first answer. */
+.quiz-feedback:empty {
+	min-height: 0;
+	margin-top: 0;
+}
+
+.quiz.answered .quiz-feedback {
+	color: var(--sl-color-green-high);
+}
+
+/* ---------- Terms ---------- */
+
+.term {
+	position: relative;
+	border-bottom: 1px dashed var(--sl-color-accent);
+	cursor: help;
+}
+
+.term-def {
+	position: absolute;
+	bottom: calc(100% + 0.5rem);
+	inset-inline-start: 50%;
+	translate: 50% 0;
+	z-index: 10;
+	width: max-content;
+	max-width: 18rem;
+	padding: 0.5rem 0.75rem;
+	border: 1px solid var(--sl-color-gray-5);
+	border-radius: 0.5rem;
+	background-color: var(--sl-color-black);
+	box-shadow: var(--sl-shadow-md);
+	color: var(--sl-color-white);
+	font-size: var(--sl-text-sm);
+	font-weight: 400;
+	line-height: 1.6;
+	text-align: start;
+	visibility: hidden;
+	opacity: 0;
+	transition: opacity 0.15s;
+}
+
+:root[dir='ltr'] .term-def {
+	translate: -50% 0;
+}
+
+.term:is(:hover, :focus) .term-def {
+	visibility: visible;
+	opacity: 1;
+}
+
+/* ---------- Figures and diagrams ---------- */
+
+.figure {
+	margin-inline: 0;
+	text-align: center;
+}
+
+.figure-media {
+	display: block;
+	width: 100%;
+	padding: 1rem;
+	border: 1px solid var(--sl-color-gray-5);
+	border-radius: 0.75rem;
+	background-color: var(--sl-color-gray-6);
+	cursor: zoom-in;
+	color: inherit;
+	font: inherit;
+}
+
+:root[data-theme='light'] .figure-media {
+	background-color: var(--sl-color-gray-7);
+}
+
+.figure-media {
+	overflow-x: auto;
+}
+
+/* On phones, diagrams keep a readable size and scroll sideways instead of
+   shrinking their labels below reading size. */
+.figure-media :is(svg, img) {
+	max-width: 100%;
+	height: auto;
+}
+
+.figure-media svg {
+	min-width: 34rem;
+}
+
+.figure figcaption {
+	margin-top: 0.5rem;
+	font-size: var(--sl-text-sm);
+	color: var(--sl-color-gray-3);
+}
+
+.figure-dialog {
+	width: min(96vw, 72rem);
+	max-height: 92vh;
+	padding: 1rem;
+	border: 1px solid var(--sl-color-gray-5);
+	border-radius: 1rem;
+	background-color: var(--sl-color-bg);
+	color: var(--sl-color-text);
+}
+
+.figure-dialog::backdrop {
+	background-color: var(--sl-color-backdrop-overlay);
+}
+
+.figure-dialog-media :is(svg, img) {
+	width: 100%;
+	height: auto;
+}
+
+.figure-close {
+	display: block;
+	margin-inline-start: auto;
+	padding: 0.25rem 0.75rem;
+	border: 1px solid var(--sl-color-gray-5);
+	border-radius: 999px;
+	background: transparent;
+	color: var(--sl-color-gray-2);
+	font: inherit;
+	cursor: pointer;
+}
+
+/* Diagram classes for hand-drawn SVGs in src/assets/diagrams/. Imported as
+   components, the SVGs sit inline in the page, so these follow light and dark mode. */
+.dg-title {
+	fill: var(--sl-color-white);
+	font-size: 15px;
+	font-weight: 600;
+}
+
+.dg-small {
+	fill: var(--sl-color-gray-2);
+	font-size: 12px;
+}
+
+.dg-code {
+	fill: var(--sl-color-white);
+	font-family: var(--__sl-font-mono);
+	font-size: 13px;
+	direction: ltr;
+	unicode-bidi: isolate;
+}
+
+.dg-box {
+	fill: var(--sl-color-bg);
+	stroke: var(--sl-color-gray-4);
+}
+
+.dg-db {
+	fill: var(--sl-color-accent-low);
+	stroke: var(--sl-color-accent);
+	stroke-width: 1.5;
+}
+
+.dg-cache {
+	fill: var(--sl-color-orange-low);
+	stroke: var(--sl-color-orange);
+}
+
+.dg-arrow {
+	fill: none;
+	stroke: var(--sl-color-gray-3);
+	stroke-width: 1.5;
+}
+
+.dg-arrowhead {
+	fill: var(--sl-color-gray-3);
+}
+
+.dg-divider {
+	stroke: var(--sl-color-gray-5);
+	stroke-dasharray: 4 4;
+}
+
+/* Query pills: one rounded bar per database query. */
+.dg-q-main {
+	fill: var(--sl-color-accent-low);
+	stroke: var(--sl-color-accent);
+}
+
+.dg-q-extra {
+	fill: var(--sl-color-orange-low);
+	stroke: var(--sl-color-orange);
+}
+
+.dg-pill {
+	fill: var(--sl-color-white);
+	font-size: 11px;
+}
+
+.dg-good {
+	fill: var(--sl-color-green-high);
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.dg-bad {
+	fill: var(--sl-color-red-high);
+	font-size: 14px;
+	font-weight: 600;
+}
+
+pre.mermaid {
+	display: flex;
+	justify-content: center;
+	padding: 1rem;
+	border: 1px solid var(--sl-color-gray-5);
+	border-radius: 0.75rem;
+	background-color: var(--sl-color-gray-6);
+	overflow-x: auto;
+	white-space: pre;
+}
+
+:root[data-theme='light'] pre.mermaid {
+	background-color: var(--sl-color-gray-7);
+}
+
+/* Hide the diagram's source text until it is drawn. */
+pre.mermaid:not([data-processed]) {
+	color: transparent;
+	min-height: 6rem;
+}

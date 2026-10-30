@@ -1,0 +1,52 @@
+---
+title: Django بالعربي
+description: مسار عربي مجاني يأخذك من أول مشروع Django حتى نشر تطبيق حقيقي.
+template: splash
+hero:
+  title: تعلّم Django من الصفر إلى الاحتراف
+  tagline: منهج عربي مجاني لمطوّري Python، مبني على وثائق Django 6.1 الرسمية، ومشروع حقيقي واحد يرافقك من أول درس حتى النشر.
+  image:
+    file: ../../assets/hero.svg
+  actions:
+    - text: ابدأ من المرحلة 0
+      link: /stage-0/
+      icon: left-arrow
+    - text: عن الموقع
+      link: /about/
+      variant: minimal
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+import { ContinueLearning } from '~/components/study';
+
+<ContinueLearning />
+
+## لماذا هذا الموقع
+
+<CardGrid>
+	<Card title="مجاني دائماً" icon="heart">
+		كل الدروس متاحة للجميع، بلا حسابات ولا اشتراكات.
+	</Card>
+	<Card title="حديث لا قديم" icon="document">
+		كل درس مربوط بملف الوثائق الرسمية الذي اعتمد عليه في Django 6.1، ويُراجَع
+		مع كل إصدار جديد.
+	</Card>
+	<Card title="مشروع حقيقي واحد" icon="rocket">
+		تبني منصة وظائف عربية من أول درس حتى تنشرها على خادم، بدل أمثلة متفرقة
+		لا تجمعها فكرة.
+	</Card>
+	<Card title="العربية أولاً" icon="translate">
+		الشرح بالعربية، والكود والمصطلحات بالإنجليزية كما ستراها في عملك، مع بناء
+		تطبيقات تدعم العربية واتجاه RTL فعلاً.
+	</Card>
+</CardGrid>
+
+## المسار
+
+<CardGrid>
+	<LinkCard title="المرحلة 0 · التمهيد" description="كيف يعمل الويب، بيئة العمل، git، وأجزاء Python التي يعتمد عليها Django." href="/stage-0/" />
+	<LinkCard title="المرحلة 1 · مبتدئ" description="المشروع والتطبيقات، الـ views والقوالب، أول الـ models، ولوحة الإدارة." href="/stage-1/" />
+	<LinkCard title="المرحلة 2 · متوسط" description="الـ ORM بعمق، الـ Forms، الـ class-based views، المصادقة والاختبارات." href="/stage-2/" />
+	<LinkCard title="المرحلة 3 · متقدم" description="رفع الملفات، البريد، المهام الخلفية، الكاش، الأمان، الترجمة وRTL." href="/stage-3/" />
+	<LinkCard title="المرحلة 4 · احتراف" description="النشر، Docker، الـ REST API، والمساهمة في Django نفسه." href="/stage-4/" />
+</CardGrid>

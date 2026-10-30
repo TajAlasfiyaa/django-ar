@@ -1,0 +1,71 @@
+---
+import { Icon } from '@astrojs/starlight/components';
+import { bidiHtml } from '../../plugins/rehype-bidi-isolate.mjs';
+import { getLessons } from '../../lib/lessons';
+
+interface Props {
+	lesson: {
+		id: string;
+		minutes: number;
+		objectives: string[];
+		prerequisites: string[];
+		django: string;
+	};
+}
+
+const { lesson } = Astro.props;
+const lessons = await getLessons();
+const prerequisites = lesson.prerequisites.map(
+	(id) => lessons.find((l) => l.id === id) ?? { id, title: '', href: undefined },
+);
+
+// Arabic number agreement: 1 دقيقة واحدة, 2 دقيقتان, 3–10 دقائق, 11+ دقيقة.
+const minutes = (n: number) =>
+	n === 1 ? 'دقيقة واحدة' : n === 2 ? 'دقيقتان' : n <= 10 ? `${n} دقائق` : `${n} دقيقة`;
+---
+
+<div class="lesson-meta">
+	<span class="chip"><Icon name="open-book" size="1rem" />الدرس {lesson.id}</span>
+	<span class="chip"><Icon name="clock" size="1rem" />{minutes(lesson.minutes)}</span>
+	<span class="chip" dir="ltr">Django {lesson.django}</span>
+	<span class="chip done" data-lesson-status hidden>
+		<Icon name="approve-check-circle" size="1rem" />مكتمل
+	</span>
+</div>
+
+{
+	lesson.objectives.length > 0 && (
+		<section class="objectives" aria-label="ماذا ستتعلم">
+			<p class="objectives-title">ماذا ستتعلم في هذا الدرس</p>
+			<ul>
+				{lesson.objectives.map((objective) => (
+					<li>
+						<Icon name="approve-check" size="1.1rem" />
+						<span set:html={bidiHtml(objective)} />
+					</li>
+				))}
+			</ul>
+		</section>
+	)
+}
+
+{
+	prerequisites.length > 0 && (
+		<p class="prerequisites">
+			<Icon name="information" size="1rem" />
+			قبل هذا الدرس:
+			{prerequisites.map((p, i) => (
+				<>
+					{i > 0 && '، '}
+					{p.href ? (
+						<a href={p.href}>
+							{p.id} <span set:html={bidiHtml(p.title)} />
+						</a>
+					) : (
+						<span>الدرس {p.id}</span>
+					)}
+				</>
+			))}
+		</p>
+	)
+}

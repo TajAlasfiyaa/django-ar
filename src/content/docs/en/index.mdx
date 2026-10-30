@@ -1,0 +1,51 @@
+---
+title: Django in Arabic
+description: A free, Arabic-first path from your first Django project to a production app.
+template: splash
+hero:
+  title: Learn Django from zero to professional
+  tagline: A free curriculum written in Arabic for Python developers, built on the official Django 6.1 documentation and one real project from the first lesson to deployment.
+  image:
+    file: ../../../assets/hero-en.svg
+  actions:
+    - text: Start with Stage 0
+      link: /en/stage-0/
+      icon: right-arrow
+    - text: About the site
+      link: /en/about/
+      variant: minimal
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+## Why this site
+
+<CardGrid>
+	<Card title="Free, always" icon="heart">
+		Every lesson is open to everyone. No accounts, no paywall.
+	</Card>
+	<Card title="Current, not dated" icon="document">
+		Every lesson cites the Django 6.1 documentation file it is based on, and is
+		reviewed with each new release.
+	</Card>
+	<Card title="One real project" icon="rocket">
+		You build an Arabic job board from the first lesson to a deployed app,
+		instead of disconnected examples.
+	</Card>
+	<Card title="Arabic first" icon="translate">
+		Explanations in Arabic, code and terms in English, plus building real
+		bilingual, right-to-left apps.
+	</Card>
+</CardGrid>
+
+## The path
+
+The lessons are written in Arabic. These pages describe each stage.
+
+<CardGrid>
+	<LinkCard title="Stage 0 · Foundations" description="How the web works, your environment, git, and the Python Django relies on." href="/en/stage-0/" />
+	<LinkCard title="Stage 1 · Beginner" description="Projects, views, templates, models, and the admin." href="/en/stage-1/" />
+	<LinkCard title="Stage 2 · Intermediate" description="The ORM in depth, forms, class-based views, auth, tests." href="/en/stage-2/" />
+	<LinkCard title="Stage 3 · Advanced" description="Files, email, tasks, caching, security, i18n and RTL." href="/en/stage-3/" />
+	<LinkCard title="Stage 4 · Professional" description="Deployment, Docker, REST APIs, and contributing to Django." href="/en/stage-4/" />
+</CardGrid>

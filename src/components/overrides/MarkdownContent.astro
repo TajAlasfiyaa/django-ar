@@ -1,0 +1,35 @@
+---
+// Starlight's content wrapper, plus the lesson footer (official reference and
+// "mark as complete") and the site-wide script for progress and diagrams.
+import Default from '@astrojs/starlight/components/MarkdownContent.astro';
+import LessonFooter from '../lesson/LessonFooter.astro';
+
+const { entry, hasSidebar } = Astro.locals.starlightRoute;
+const { title, lesson } = entry.data;
+---
+
+<Default><slot /></Default>
+{
+	hasSidebar && (
+		<button type="button" class="sidebar-toggle" aria-pressed="false" aria-label="إخفاء القائمة الجانبية">
+			<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+				<rect x="3" y="4" width="18" height="16" rx="2" />
+				<path d="M15 4v16" />
+			</svg>
+		</button>
+	)
+}
+{
+	lesson && (
+		<>
+			<LessonFooter lesson={lesson} title={title} />
+			<div class="reading-progress" aria-hidden="true">
+				<span />
+			</div>
+		</>
+	)
+}
+
+<script>
+	import '../../scripts/site';
+</script>

@@ -1,0 +1,114 @@
+/* Fonts: IBM Plex Sans Arabic carries both Arabic and Latin glyphs, so mixed
+   sentences share one design instead of switching fonts mid-line. */
+:root {
+	--sl-font: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+	/* Arabic strings inside code (verbose_name, messages) fall back to the
+	   Arabic font, since monospace fonts break Arabic letters apart. */
+	--sl-font-mono: 'IBM Plex Mono', 'IBM Plex Sans Arabic', ui-monospace, monospace;
+	--sl-content-width: 46rem;
+}
+
+/* Colours: Django's greens. Scoped to dark mode, because unlayered rules here
+   would otherwise override Starlight's light-mode values. */
+:root:not([data-theme='light']) {
+	--sl-color-accent-low: hsl(158, 50%, 14%);
+	--sl-color-accent: hsl(154, 46%, 49%);
+	--sl-color-accent-high: hsl(150, 60%, 82%);
+
+	--sl-color-black: hsl(160, 14%, 8%);
+	--sl-color-gray-6: hsl(160, 12%, 12%);
+	--sl-color-gray-5: hsl(160, 8%, 21%);
+	--sl-color-gray-4: hsl(160, 5%, 34%);
+}
+
+:root[data-theme='light'] {
+	--sl-color-accent-low: hsl(150, 45%, 90%);
+	--sl-color-accent: hsl(156, 70%, 27%);
+	--sl-color-accent-high: hsl(156, 72%, 17%);
+
+	--sl-color-gray-6: hsl(150, 20%, 94%);
+	--sl-color-gray-7: hsl(150, 20%, 97%);
+}
+
+/* Arabic reads better with more room between lines. */
+:root[dir='rtl'] {
+	--sl-line-height: 1.9;
+}
+
+:lang(ar) {
+	letter-spacing: normal;
+}
+
+/* Mixed text. Inline code is isolated and always LTR, so the punctuation around
+   `filter()` stays in place inside an Arabic sentence. */
+.sl-markdown-content :not(pre) > code,
+.sl-markdown-content kbd {
+	unicode-bidi: isolate;
+	direction: ltr;
+}
+
+/* Code blocks are always LTR and left-aligned, even on Arabic pages. Mermaid
+   diagrams are also <pre>, but their labels follow the page direction. */
+.sl-markdown-content pre:not(.mermaid),
+.expressive-code {
+	direction: ltr;
+	text-align: left;
+}
+
+/* Notes use the brand green instead of Starlight's blue. */
+.starlight-aside--note {
+	--sl-color-asides-text-accent: var(--sl-color-accent-high);
+	--sl-color-asides-border: var(--sl-color-accent);
+	background-color: var(--sl-color-accent-low);
+}
+
+/* File trees are paths, so they read left to right; Arabic comments beside a
+   file keep their own direction. */
+starlight-file-tree {
+	direction: ltr;
+	text-align: left;
+}
+
+starlight-file-tree .comment {
+	direction: rtl;
+	unicode-bidi: isolate;
+}
+
+/* Tables follow the page direction. */
+.sl-markdown-content th,
+.sl-markdown-content td {
+	text-align: start;
+}
+
+/* Headings: Arabic headings look heavy at 700. */
+.sl-markdown-content :is(h1, h2, h3, h4) {
+	font-weight: 600;
+}
+
+/* Landing page hero: a soft green glow behind the illustration. */
+[data-has-hero] .main-frame {
+	background:
+		radial-gradient(60rem 30rem at 20% 0%, hsl(154 46% 49% / 0.14), transparent 70%),
+		radial-gradient(40rem 24rem at 90% 10%, hsl(156 72% 30% / 0.12), transparent 70%);
+}
+
+:root[data-theme='light'][data-has-hero] .main-frame {
+	background:
+		radial-gradient(60rem 30rem at 20% 0%, hsl(154 46% 49% / 0.16), transparent 70%),
+		radial-gradient(40rem 24rem at 90% 10%, hsl(150 45% 80% / 0.35), transparent 70%);
+}
+
+.hero h1 {
+	line-height: 1.3;
+}
+
+.hero .tagline {
+	max-width: 36rem;
+	margin-inline: auto;
+}
+
+@media (min-width: 50rem) {
+	.hero .tagline {
+		margin-inline: 0;
+	}
+}

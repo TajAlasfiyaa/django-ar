@@ -1,0 +1,16 @@
+---
+// A technical term with its Arabic explanation, shown on hover, focus, or tap.
+// Usage: <Term def="استعلام لا يُنفَّذ حتى نحتاج نتيجته">QuerySet</Term>
+import { bidiHtml } from '../../plugins/rehype-bidi-isolate.mjs';
+
+interface Props {
+	def: string;
+}
+
+const { def } = Astro.props;
+const id = `term-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<span class="term" tabindex="0" aria-describedby={id}
+	><slot /><span class="term-def" role="tooltip" id={id} set:html={bidiHtml(def)} /></span
+>

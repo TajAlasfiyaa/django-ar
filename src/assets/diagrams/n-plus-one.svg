@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 372" role="img" aria-label="عشر وظائف: 11 استعلاماً بدون تحسين، واستعلامان مع prefetch_related أو FETCH_PEERS، واستعلام واحد مع select_related">
+  <!-- Each pill is one query to the database. Ten jobs, each with a company. -->
+
+  <!-- Right: no optimisation, 1 + N -->
+  <text x="530" y="26" text-anchor="middle" class="dg-title">بدون تحسين</text>
+  <text x="530" y="46" text-anchor="middle" class="dg-code">FETCH_ONE</text>
+  <rect x="440" y="80" width="180" height="18" rx="9" class="dg-q-main"/>
+  <text x="530" y="93" text-anchor="middle" class="dg-pill">الوظائف</text>
+  <rect x="440" y="102" width="180" height="18" rx="9" class="dg-q-extra"/>
+  <text x="530" y="115" text-anchor="middle" class="dg-pill">شركة الوظيفة 1</text>
+  <rect x="440" y="124" width="180" height="18" rx="9" class="dg-q-extra"/>
+  <text x="530" y="137" text-anchor="middle" class="dg-pill">شركة الوظيفة 2</text>
+  <rect x="440" y="146" width="180" height="18" rx="9" class="dg-q-extra"/>
+  <text x="530" y="159" text-anchor="middle" class="dg-pill">شركة الوظيفة 3</text>
+  <rect x="440" y="168" width="180" height="18" rx="9" class="dg-q-extra"/>
+  <rect x="440" y="190" width="180" height="18" rx="9" class="dg-q-extra"/>
+  <rect x="440" y="212" width="180" height="18" rx="9" class="dg-q-extra"/>
+  <rect x="440" y="234" width="180" height="18" rx="9" class="dg-q-extra"/>
+  <rect x="440" y="256" width="180" height="18" rx="9" class="dg-q-extra"/>
+  <rect x="440" y="278" width="180" height="18" rx="9" class="dg-q-extra"/>
+  <rect x="440" y="300" width="180" height="18" rx="9" class="dg-q-extra"/>
+  <text x="530" y="313" text-anchor="middle" class="dg-pill">شركة الوظيفة 10</text>
+  <text x="530" y="350" text-anchor="middle" class="dg-bad">11 استعلاماً</text>
+
+  <!-- Middle: one extra batch query -->
+  <text x="320" y="26" text-anchor="middle" class="dg-title">دفعة واحدة إضافية</text>
+  <text x="320" y="46" text-anchor="middle" class="dg-code">prefetch_related</text>
+  <text x="320" y="64" text-anchor="middle" class="dg-small">أو FETCH_PEERS</text>
+  <rect x="230" y="80" width="180" height="18" rx="9" class="dg-q-main"/>
+  <text x="320" y="93" text-anchor="middle" class="dg-pill">الوظائف</text>
+  <rect x="230" y="102" width="180" height="18" rx="9" class="dg-q-extra"/>
+  <text x="320" y="115" text-anchor="middle" class="dg-pill">كل الشركات معاً</text>
+  <text x="320" y="350" text-anchor="middle" class="dg-good">استعلامان</text>
+
+  <!-- Left: a single query with a JOIN -->
+  <text x="110" y="26" text-anchor="middle" class="dg-title">استعلام واحد</text>
+  <text x="110" y="46" text-anchor="middle" class="dg-code">select_related</text>
+  <rect x="20" y="80" width="180" height="18" rx="9" class="dg-q-main"/>
+  <text x="110" y="93" text-anchor="middle" class="dg-pill">الوظائف مع شركاتها</text>
+  <text x="110" y="350" text-anchor="middle" class="dg-good">استعلام واحد</text>
+
+  <line x1="420" y1="12" x2="420" y2="330" class="dg-divider"/>
+  <line x1="215" y1="12" x2="215" y2="330" class="dg-divider"/>
+</svg>

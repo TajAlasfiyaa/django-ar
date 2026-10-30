@@ -1,0 +1,50 @@
+---
+import { Icon } from '@astrojs/starlight/components';
+import { docsUrl, getLessons } from '../../lib/lessons';
+
+interface Props {
+	title: string;
+	lesson: { id: string; docs: string[]; django: string };
+}
+
+const { title, lesson } = Astro.props;
+const stage = Number(lesson.id.split('.')[0]);
+const stageHrefs = (await getLessons()).filter((l) => l.stage === stage).map((l) => l.href);
+---
+
+<section
+	class="lesson-footer"
+	data-lesson-path={Astro.url.pathname}
+	data-lesson-id={lesson.id}
+	data-lesson-title={title}
+	data-stage={stage}
+	data-stage-hrefs={JSON.stringify(stageHrefs)}
+>
+	{
+		lesson.docs.length > 0 && (
+			<div class="docs-ref">
+				<p class="docs-ref-title">
+					<Icon name="open-book" size="1.1rem" />
+					المرجع الرسمي <span dir="ltr">(Django {lesson.django})</span>
+				</p>
+				<ul>
+					{lesson.docs.map((path) => (
+						<li>
+							<a href={docsUrl(path, lesson.django)} dir="ltr">
+								<code>{path}</code>
+							</a>
+						</li>
+					))}
+				</ul>
+			</div>
+		)
+	}
+
+	<div class="complete-box">
+		<button type="button" class="complete-btn" aria-pressed="false">
+			<Icon name="approve-check-circle" size="1.25rem" />
+			<span data-label>علّم الدرس كمكتمل</span>
+		</button>
+		<p class="complete-note" data-note aria-live="polite"></p>
+	</div>
+</section>

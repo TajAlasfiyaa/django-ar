@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 240" role="img" aria-label="QuerySet جديد في كل مرة يعني استعلامين، والمحفوظ في متغير يعني استعلاماً واحداً">
+  <defs>
+    <marker id="qc-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" class="dg-arrowhead"/>
+    </marker>
+  </defs>
+
+  <line x1="320" y1="16" x2="320" y2="224" class="dg-divider"/>
+
+  <!-- Right: a new QuerySet each time -->
+  <text x="475" y="28" text-anchor="middle" class="dg-title">بدون متغير</text>
+  <rect x="440" y="50" width="170" height="36" rx="8" class="dg-box"/>
+  <text x="525" y="73" text-anchor="middle" class="dg-code">Job.objects.all()</text>
+  <rect x="440" y="100" width="170" height="36" rx="8" class="dg-box"/>
+  <text x="525" y="123" text-anchor="middle" class="dg-code">Job.objects.all()</text>
+  <path d="M340 64v62c0 8 70 8 70 0V64" class="dg-db"/>
+  <ellipse cx="375" cy="64" rx="35" ry="8" class="dg-db"/>
+  <text x="375" y="152" text-anchor="middle" class="dg-small">قاعدة البيانات</text>
+  <path d="M438 68L414 84" class="dg-arrow" marker-end="url(#qc-arrow)"/>
+  <path d="M438 118L414 104" class="dg-arrow" marker-end="url(#qc-arrow)"/>
+  <text x="475" y="208" text-anchor="middle" class="dg-bad">استعلامان إلى قاعدة البيانات</text>
+
+  <!-- Left: one QuerySet kept in a variable -->
+  <text x="165" y="28" text-anchor="middle" class="dg-title">مع متغير</text>
+  <rect x="130" y="50" width="170" height="36" rx="8" class="dg-box"/>
+  <text x="215" y="73" text-anchor="middle" class="dg-code">for job in jobs</text>
+  <rect x="130" y="100" width="170" height="36" rx="8" class="dg-box"/>
+  <text x="215" y="123" text-anchor="middle" class="dg-code">for job in jobs</text>
+  <path d="M30 64v62c0 8 70 8 70 0V64" class="dg-db"/>
+  <ellipse cx="65" cy="64" rx="35" ry="8" class="dg-db"/>
+  <text x="65" y="152" text-anchor="middle" class="dg-small">قاعدة البيانات</text>
+  <path d="M128 68L104 84" class="dg-arrow" marker-end="url(#qc-arrow)"/>
+  <rect x="170" y="158" width="90" height="28" rx="14" class="dg-cache"/>
+  <text x="215" y="177" text-anchor="middle" class="dg-small">الكاش</text>
+  <path d="M215 138V156" class="dg-arrow" marker-end="url(#qc-arrow)"/>
+  <text x="165" y="218" text-anchor="middle" class="dg-good">استعلام واحد، والباقي من الكاش</text>
+</svg>

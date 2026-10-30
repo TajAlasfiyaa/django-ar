@@ -1,0 +1,33 @@
+---
+// Home page card: the last lesson opened and overall progress. Hidden until the
+// reader has opened at least one lesson.
+import { Icon } from '@astrojs/starlight/components';
+import { getLessons } from '../../lib/lessons';
+
+const lessons = await getLessons();
+---
+
+<div class="continue not-content" data-continue hidden>
+	<div class="continue-main">
+		<p class="continue-label">تابع من حيث توقفت</p>
+		<a data-continue-link href="/">
+			<span data-continue-title></span>
+			<Icon name="left-arrow" size="1.1rem" />
+		</a>
+	</div>
+	{
+		lessons.length > 0 && (
+			<div class="progress-card" data-progress-hrefs={JSON.stringify(lessons.map((l) => l.href))}>
+				<div class="progress-head">
+					<span>تقدّمك في المسار</span>
+					<span>
+						<span data-progress-done>0</span> / {lessons.length}
+					</span>
+				</div>
+				<div class="progress-bar">
+					<span data-progress-fill />
+				</div>
+			</div>
+		)
+	}
+</div>

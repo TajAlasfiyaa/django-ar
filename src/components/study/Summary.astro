@@ -1,0 +1,15 @@
+---
+// Key points at the end of a lesson: what the student should remember.
+import { Icon } from '@astrojs/starlight/components';
+
+interface Props {
+	title?: string;
+}
+
+const { title = 'الخلاصة' } = Astro.props;
+---
+
+<section class="study-box summary">
+	<p class="study-box-title"><Icon name="star" size="1.15rem" />{title}</p>
+	<slot />
+</section>

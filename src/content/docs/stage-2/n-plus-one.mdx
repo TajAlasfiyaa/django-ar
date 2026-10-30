@@ -1,0 +1,290 @@
+---
+title: مشكلة N+1 وحلولها
+description: لماذا تبطئ صفحة الوظائف كلما زادت الوظائف، وكيف تحلها بـ select_related وprefetch_related وFetch modes الجديدة في Django 6.1.
+sidebar:
+  order: 4
+lesson:
+  id: '2.4'
+  minutes: 30
+  objectives:
+    - تكتشف مشكلة N+1 وتعدّ الاستعلامات التي يرسلها الكود فعلاً.
+    - تحلها بـ select_related في علاقات ForeignKey وOneToOneField.
+    - تحلها بـ prefetch_related في علاقات ManyToManyField والعلاقات العكسية.
+    - تستخدم Fetch modes الجديدة في Django 6.1 للحل السريع، ولمنع الاستعلامات غير المقصودة.
+  prerequisites: ['2.1', '2.3']
+  docs:
+    - topics/db/fetch-modes.txt
+    - ref/models/querysets.txt
+    - topics/db/optimization.txt
+---
+
+import { Aside } from '@astrojs/starlight/components';
+import { Exercise, Hint, Solution, Quiz, Summary, Term, Figure } from '~/components/study';
+import NPlusOne from '~/assets/diagrams/n-plus-one.svg';
+
+صفحة الوظائف في منصتنا تعرض كل وظيفة واسم شركتها. مع 10 وظائف تفتح الصفحة فوراً، ومع 500 وظيفة تصبح بطيئة بشكل واضح. السبب ليس حجم البيانات، بل عدد الاستعلامات التي يرسلها Django إلى قاعدة البيانات.
+
+## الـ models التي نعمل عليها
+
+هذه الـ models من منصة الوظائف. لكل وظيفة شركة واحدة، ويمكن أن يكون لها عدة وسوم:
+
+```python title="jobs/models.py"
+from django.db import models
+
+
+class Company(models.Model):
+    name = models.CharField(max_length=200)
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50)
+
+
+class Job(models.Model):
+    title = models.CharField(max_length=200)
+    company = models.ForeignKey(
+        Company, on_delete=models.CASCADE, related_name="jobs"
+    )
+    tags = models.ManyToManyField(Tag, blank=True)
+    is_open = models.BooleanField(default=True)
+```
+
+## المشكلة: استعلام إضافي لكل وظيفة
+
+هذا الكود يبدو بريئاً تماماً:
+
+```python title="jobs/views.py"
+def job_list(request):
+    jobs = Job.objects.filter(is_open=True)
+    return render(request, "jobs/job_list.html", {"jobs": jobs})
+```
+
+```jinja title="jobs/templates/jobs/job_list.html" {4}
+{% for job in jobs %}
+  <article>
+    <h2>{{ job.title }}</h2>
+    <p>{{ job.company.name }}</p>
+  </article>
+{% endfor %}
+```
+
+الاستعلام الأول يجلب الوظائف فقط. أما الشركة فلم تُجلب معها، فكل مرة يصل القالب إلى `job.company` في السطر 4، يرسل Django استعلاماً جديداً ليجلب شركة تلك الوظيفة.
+
+مع 10 وظائف يصبح المجموع 11 استعلاماً: واحد للوظائف، وعشرة للشركات. ومع N وظيفة يصبح N+1، ومن هنا جاء اسم <Term def="استعلام واحد لجلب القائمة، ثم استعلام إضافي لكل عنصر فيها">مشكلة N+1</Term>.
+
+<Figure caption="كل شريط استعلام واحد إلى قاعدة البيانات، لعشر وظائف لكل منها شركة">
+	<NPlusOne />
+</Figure>
+
+## كيف تكتشفها
+
+لا تخمّن، بل عُدّ الاستعلامات. عندك ثلاث طرق:
+
+- **في المتصفح:** لوحة SQL في Django Debug Toolbar (الدرس 1.12) تعرض عدد الاستعلامات في كل صفحة ونصّها.
+- **في الـ shell:** عندما يكون `DEBUG = True`، يحتفظ Django بكل استعلام في `connection.queries`.
+- **في الاختبارات:** `assertNumQueries` تفشل إذا تغيّر عدد الاستعلامات، فلا تعود المشكلة دون أن تلاحظ.
+
+```python title="python manage.py shell"
+from django.db import connection, reset_queries
+
+reset_queries()
+for job in Job.objects.all():
+    job.company.name
+
+len(connection.queries)  # 11 مع 10 وظائف
+```
+
+## الحل الأول: select_related للعلاقات المفردة
+
+`select_related` تجلب الشركة مع الوظيفة في نفس الاستعلام، باستخدام <Term def="ربط جدولين في استعلام SQL واحد، فترجع الوظيفة وشركتها في نفس الصف">JOIN</Term>:
+
+```python title="jobs/views.py" ins={2}
+def job_list(request):
+    jobs = Job.objects.filter(is_open=True).select_related("company")
+    return render(request, "jobs/job_list.html", {"jobs": jobs})
+```
+
+الآن يرسل الكود استعلاماً واحداً فقط، مهما كان عدد الوظائف. لا تحتاج تغيير القالب.
+
+`select_related` تعمل مع العلاقات التي تشير إلى عنصر واحد: `ForeignKey` و`OneToOneField`. ويمكنك أن تتبع سلسلة علاقات بشرطتين سفليتين، مثل `select_related("company__city")` لو كان للشركة مدينة.
+
+## الحل الثاني: prefetch_related للعلاقات المتعددة
+
+لنعرض وسوم كل وظيفة أيضاً:
+
+```jinja
+{% for tag in job.tags.all %}
+  <span>{{ tag.name }}</span>
+{% endfor %}
+```
+
+نفس المشكلة تعود: استعلام وسوم لكل وظيفة. لكن `select_related` لا تقبل علاقة `ManyToManyField`، وDjango يرفضها برسالة واضحة:
+
+```text wrap
+FieldError: Invalid field name(s) given in select_related: 'tags'. Choices are: company
+```
+
+هنا نستخدم `prefetch_related`. هي ترسل استعلاماً ثانياً يجلب وسوم كل الوظائف دفعة واحدة، ثم تربط كل وسم بوظيفته داخل Python:
+
+```python
+jobs = (
+    Job.objects.filter(is_open=True)
+    .select_related("company")
+    .prefetch_related("tags")
+)
+```
+
+النتيجة استعلامان فقط: واحد للوظائف مع شركاتها، وواحد لكل الوسوم.
+
+ونفس الحل للعلاقة العكسية. صفحة الشركات التي تعرض وظائف كل شركة تحتاج `prefetch_related("jobs")`، لأن `company.jobs` قد تحتوي عدة وظائف.
+
+<Aside type="caution" title="خطأ شائع">
+	بعد `prefetch_related("tags")`، كتابة `job.tags.filter(name="python")` ترسل استعلاماً جديداً لكل وظيفة، لأن `filter()` تعني استعلاماً مختلفاً عن الذي جُلب مسبقاً. استخدم `job.tags.all()` وصفِّ النتائج في Python، أو حدّد الاستعلام المطلوب مسبقاً بكائن `Prefetch`.
+</Aside>
+
+## الجديد في Django 6.1: Fetch modes
+
+حتى الآن كان عليك أن تتذكر كل علاقة وتضيفها بنفسك. Django 6.1 أضاف طريقة أخرى: تحدد **كيف** يجلب Django الحقل الناقص عندما تصل إليه، بدل أن تحدد مسبقاً **ماذا** يجلب.
+
+| الوضع | ماذا يفعل عند الوصول إلى `job.company` | الاستعلامات لعشر وظائف |
+| --- | --- | --- |
+| `FETCH_ONE` | يجلب شركة هذه الوظيفة فقط. هذا هو الافتراضي | 11 |
+| `FETCH_PEERS` | يجلب شركات كل الوظائف التي جاءت من نفس الـ QuerySet دفعة واحدة | 2 |
+| `FETCH_RAISE` | يرفض ويرفع خطأ `FieldFetchBlocked` | خطأ |
+
+```python
+from django.db import models
+
+jobs = Job.objects.filter(is_open=True).fetch_mode(models.FETCH_PEERS)
+```
+
+لم نذكر `company` في أي مكان، ومع ذلك يصبح الكود استعلامين بدل 11. هذا يجعل `FETCH_PEERS` حلاً سريعاً لأغلب حالات N+1.
+
+<Aside type="caution" title="حدود FETCH_PEERS">
+	Fetch modes تعمل مع `ForeignKey` و`OneToOneField` (في الاتجاهين)، والحقول المؤجلة بـ `defer()` و`only()`. لكنها **لا** تؤثر على `ManyToManyField`، ولا على الاتجاه العكسي لـ `ForeignKey` مثل `company.jobs`. هذه ما زالت تحتاج `prefetch_related`.
+</Aside>
+
+### FETCH_RAISE: اجعل الخطأ يظهر مبكراً
+
+في صفحة مهمة لأداء الموقع، تريد أن تعرف فوراً إذا نسيت علاقة. `FETCH_RAISE` تحوّل أي استعلام غير مقصود إلى خطأ واضح:
+
+```python
+jobs = Job.objects.fetch_mode(models.FETCH_RAISE)
+jobs[0].company.name
+# FieldFetchBlocked: Fetching of Job.company blocked.
+
+jobs = (
+    Job.objects.fetch_mode(models.FETCH_RAISE)
+    .select_related("company")
+)
+jobs[0].company.name  # يعمل: الشركة جُلبت مسبقاً
+```
+
+### وضع افتراضي لكل الـ model
+
+إذا أردت `FETCH_PEERS` في كل استعلامات الوظائف، اجعله في manager مخصص (الدرس 2.8):
+
+```python title="jobs/models.py" ins={1-3,8}
+class JobManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().fetch_mode(models.FETCH_PEERS)
+
+
+class Job(models.Model):
+    ...
+    objects = JobManager()
+```
+
+## أي أداة أستخدم؟
+
+| العلاقة | مثال | الحل | الاستعلامات |
+| --- | --- | --- | --- |
+| `ForeignKey` أو `OneToOneField` | `job.company` | `select_related` | 1 |
+| `ForeignKey` أو `OneToOneField` | `job.company` | `FETCH_PEERS` | 2 |
+| `ManyToManyField` | `job.tags` | `prefetch_related` | 2 |
+| عكس `ForeignKey` | `company.jobs` | `prefetch_related` | 2 |
+
+`select_related` تعطي أقل عدد من الاستعلامات، لكن عليك أن تعرف العلاقات مسبقاً. `FETCH_PEERS` لا تحتاج أن تذكر العلاقات، مقابل استعلام إضافي.
+
+<Aside type="tip">
+	إذا كنت تحتاج رقم الشركة فقط، استخدم `job.company_id` بدل `job.company.id`. الرقم موجود أصلاً في صف الوظيفة، فلا يحتاج أي استعلام.
+</Aside>
+
+## احمِ الحل باختبار
+
+اكتب اختباراً يثبّت عدد الاستعلامات، حتى لا تعود المشكلة إذا عدّل أحد الكود لاحقاً:
+
+```python title="jobs/tests.py"
+from django.test import TestCase
+
+from .models import Company, Job
+
+
+class JobQueryTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        company = Company.objects.create(name="شركة النيل")
+        for i in range(3):
+            Job.objects.create(title=f"وظيفة {i}", company=company)
+
+    def test_company_names_in_one_query(self):
+        with self.assertNumQueries(1):
+            for job in Job.objects.select_related("company"):
+                job.company.name
+```
+
+## تدرّب
+
+<Exercise>
+	صفحة الشركات تعرض كل شركة ووظائفها. في قاعدة البيانات 5 شركات:
+
+	```python
+	for company in Company.objects.all():
+	    print(company.name, [job.title for job in company.jobs.all()])
+	```
+
+	كم استعلاماً يرسل هذا الكود؟ عدّله ليصبح استعلامين فقط.
+
+	<Hint>
+		`company.jobs` علاقة عكسية لـ `ForeignKey`. راجع حدود `FETCH_PEERS`.
+	</Hint>
+
+	<Solution>
+		6 استعلامات: واحد للشركات، وواحد لوظائف كل شركة. `FETCH_PEERS` لا تساعد هنا لأنها لا تؤثر على الاتجاه العكسي لـ `ForeignKey`. الحل `prefetch_related`:
+
+		```python
+		for company in Company.objects.prefetch_related("jobs"):
+		    print(company.name, [job.title for job in company.jobs.all()])
+		```
+	</Solution>
+</Exercise>
+
+<Quiz answer={3}>
+تريد عرض وسوم كل وظيفة، أي `job.tags.all()`، بأقل عدد من الاستعلامات. ماذا تستخدم؟
+
+- `select_related("tags")`
+- `fetch_mode(models.FETCH_PEERS)`
+- `prefetch_related("tags")`
+- لا شيء، Django يجلبها تلقائياً
+
+`tags` علاقة `ManyToManyField`. `select_related` ترفضها بخطأ `FieldError`، و`FETCH_PEERS` لا تؤثر عليها، فالحل `prefetch_related` باستعلامين.
+</Quiz>
+
+<Quiz answer={2}>
+ماذا يحدث مع `fetch_mode(models.FETCH_RAISE)` عندما تصل إلى `job.company` ولم تُجلب الشركة مسبقاً؟
+
+- يجلب Django الشركة بصمت كالعادة
+- يرفع Django خطأ `FieldFetchBlocked`
+- يرجع `None`
+
+`FETCH_RAISE` تمنع أي استعلام غير مقصود، فتعرف بالمشكلة أثناء التطوير بدل أن يكتشفها المستخدم كبطء في الصفحة.
+</Quiz>
+
+<Summary>
+	- مشكلة N+1: استعلام للقائمة، ثم استعلام لكل عنصر عند الوصول إلى علاقته.
+	- عُدّ الاستعلامات قبل أن تحسّن: Debug Toolbar، أو `connection.queries`، أو `assertNumQueries`.
+	- `select_related` لـ `ForeignKey` و`OneToOneField`: استعلام واحد بـ JOIN.
+	- `prefetch_related` لـ `ManyToManyField` والعلاقات العكسية: استعلام إضافي واحد لكل علاقة.
+	- `FETCH_PEERS` في Django 6.1 تحل أغلب حالات `ForeignKey` باستعلامين، دون أن تذكر العلاقات.
+	- `FETCH_RAISE` تحوّل الاستعلام المنسي إلى خطأ واضح أثناء التطوير.
+</Summary>

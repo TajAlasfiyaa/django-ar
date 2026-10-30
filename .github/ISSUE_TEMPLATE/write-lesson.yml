@@ -1,0 +1,25 @@
+name: أريد كتابة درس
+description: احجز درساً من المنهج قبل أن تبدأ، حتى لا يكتب شخصان الدرس نفسه.
+title: "الدرس "
+labels: ["lesson"]
+body:
+  - type: input
+    id: lesson
+    attributes:
+      label: رقم الدرس وعنوانه
+      description: كما في CURRICULUM.md.
+      placeholder: "0.2 · بيئة العمل"
+    validations:
+      required: true
+  - type: textarea
+    id: plan
+    attributes:
+      label: كيف تنوي كتابته؟ (اختياري)
+      description: الأمثلة أو الرسومات التي تفكر فيها، أو أي سؤال قبل البدء.
+  - type: checkboxes
+    id: ready
+    attributes:
+      label: قبل البدء
+      options:
+        - label: قرأت CONTRIBUTING.md ودليل الكتابة.
+          required: true

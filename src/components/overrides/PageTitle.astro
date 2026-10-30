@@ -1,0 +1,24 @@
+---
+// Starlight's page title, with Latin runs isolated on Arabic pages, plus the
+// lesson header on lessons and the progress bar on stage overview pages.
+import { bidiHtml } from '../../plugins/rehype-bidi-isolate.mjs';
+import LessonHeader from '../lesson/LessonHeader.astro';
+import StageProgress from '../lesson/StageProgress.astro';
+
+const { entry, dir } = Astro.locals.starlightRoute;
+const { title, lesson, stage } = entry.data;
+---
+
+{dir === 'rtl' ? <h1 id="_top" set:html={bidiHtml(title)} /> : <h1 id="_top">{title}</h1>}
+{lesson && <LessonHeader lesson={lesson} />}
+{stage !== undefined && <StageProgress stage={stage} />}
+
+<style>
+	h1 {
+		margin-top: 1rem;
+		font-size: var(--sl-text-h1);
+		line-height: var(--sl-line-height-headings);
+		font-weight: 600;
+		color: var(--sl-color-white);
+	}
+</style>
