@@ -20,7 +20,7 @@
 
 المشروع مفتوح للمساهمة، ولا يلزم أن تكون خبيراً:
 
-- **وجدت خطأ؟** افتح [issue](../../issues/new/choose)، أو اضغط «عدل الصفحة» أسفل أي درس وصحّحه مباشرة على GitHub.
+- **وجدت خطأ؟** افتح [issue](https://github.com/TajAlasfiyaa/django-ar/issues/new/choose)، أو اضغط «عدل الصفحة» أسفل أي درس وصحّحه مباشرة على GitHub.
 - **تريد كتابة درس؟** اختر درساً من [CURRICULUM.md](CURRICULUM.md)، واحجزه في issue، ثم اتبع [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ### نفس الموارد لكل من يكتب
